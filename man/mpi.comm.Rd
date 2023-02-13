@@ -29,7 +29,7 @@ Hao Yu
 }
 \examples{
 \donttest{
-#Assume that there are some slaves running
+#Assume that there are some children running
 mpi.comm.size(comm=1)
 mpi.comm.size(comm=0)
 

@@ -22,7 +22,7 @@ string(length)
 \code{string} returns an empty character string.
 }
 \seealso{
-  \code{\link{mpi.spawn.Rslaves}}
+  \code{\link{mpi.spawn.Rchildren}}
 }
 \author{
 Hao Yu

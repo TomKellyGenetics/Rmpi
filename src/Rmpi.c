@@ -1024,40 +1024,40 @@ SEXP mpi_comm_test_inter(SEXP sexp_comm){
 }
 
 #ifdef MPI2
-SEXP mpi_comm_spawn (SEXP sexp_slave,
+SEXP mpi_comm_spawn (SEXP sexp_child,
 					 SEXP sexp_argv,
-					 SEXP sexp_nslave,
+					 SEXP sexp_nchild,
 					 SEXP sexp_info,
 					 SEXP sexp_root,
 					 SEXP sexp_intercomm,
 					 SEXP sexp_quiet){
-    int i, nslave = INTEGER (sexp_nslave)[0], len = LENGTH (sexp_argv);
+    int i, nchild = INTEGER (sexp_nchild)[0], len = LENGTH (sexp_argv);
 	int infon=INTEGER(sexp_info)[0], root=INTEGER(sexp_root)[0];
-	int intercommn=INTEGER(sexp_intercomm)[0], *slaverrcode, realns;
+	int intercommn=INTEGER(sexp_intercomm)[0], *childrrcode, realns;
     int quiet = INTEGER(sexp_quiet)[0];
 
-	slaverrcode = (int *)Calloc(nslave, int);
+	childrrcode = (int *)Calloc(nchild, int);
 	if (len==0)
-		mpi_errhandler(MPI_Comm_spawn (CHAR2 (STRING_ELT (sexp_slave, 0)), MPI_ARGV_NULL, nslave,   
+		mpi_errhandler(MPI_Comm_spawn (CHAR2 (STRING_ELT (sexp_child, 0)), MPI_ARGV_NULL, nchild,   
 					info[infon], root, MPI_COMM_SELF, &comm[intercommn],
-					slaverrcode)); 
+					childrrcode)); 
 	else {
 		char **argv = (char **) R_alloc (len+1, sizeof (char *));
 		for (i = 0; i < len; i++)
 			argv[i] = CHAR2 (STRING_ELT (sexp_argv, i));
 		argv[len] = NULL;
-		mpi_errhandler(MPI_Comm_spawn (CHAR2 (STRING_ELT (sexp_slave, 0)), argv, nslave,   
+		mpi_errhandler(MPI_Comm_spawn (CHAR2 (STRING_ELT (sexp_child, 0)), argv, nchild,   
 					info[infon], root, MPI_COMM_SELF, &comm[intercommn],
-					slaverrcode)); 
+					childrrcode)); 
 	}
 
 	MPI_Comm_remote_size(comm[intercommn], &realns);
-	if (realns < nslave)
-		for (i=0; i < nslave; mpi_errhandler(slaverrcode[i++]));
+	if (realns < nchild)
+		for (i=0; i < nchild; mpi_errhandler(childrrcode[i++]));
 
-	Free(slaverrcode);
-	if (!quiet || realns < nslave)
-		Rprintf("\t%d slaves are spawned successfully. %d failed.\n", realns, nslave-realns);
+	Free(childrrcode);
+	if (!quiet || realns < nchild)
+		Rprintf("\t%d children are spawned successfully. %d failed.\n", realns, nchild-realns);
     return AsInt(realns);
 }
 
@@ -1065,12 +1065,12 @@ SEXP mpi_comm_get_parent(SEXP sexp_comm){
 	return AsInt(erreturn(mpi_errhandler(MPI_Comm_get_parent(&comm[INTEGER(sexp_comm)[0]]))));
 }
 
-SEXP mpi_is_master(){
+SEXP mpi_is_parent(){
 	int check;
-	MPI_Comm master;
-	MPI_Comm_get_parent(&master);
-	check=(master==MPI_COMM_NULL);
-	if (!check) MPI_Comm_free(&master);
+	MPI_Comm parent;
+	MPI_Comm_get_parent(&parent);
+	check=(parent==MPI_COMM_NULL);
+	if (!check) MPI_Comm_free(&parent);
 	return AsInt(check);
 }
 

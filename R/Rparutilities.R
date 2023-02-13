@@ -12,47 +12,47 @@ mpi.hostinfo <- function(comm=1){
         "on comm", comm, "\n")
 }
 
-slave.hostinfo <- function(comm=1, short=TRUE){
-    #if (!mpi.is.master())
+child.hostinfo <- function(comm=1, short=TRUE){
+    #if (!mpi.is.parent())
  	if (mpi.comm.rank(comm)!=0)
-		stop("cannot run slavehostinfo on slaves")
+		stop("cannot run childhostinfo on children")
     size <- mpi.comm.size(comm)
     if (size==0){
-        err <-paste("It seems no slaves running on comm", comm)
+        err <-paste("It seems no children running on comm", comm)
         stop(err)
     }
     if (size == 1)
     mpi.hostinfo(comm)
     else { 
-        master <-mpi.get.processor.name() 
-        slavehost <- unlist(mpi.remote.exec(mpi.get.processor.name(),comm=comm))
-        slavecomm <- 1 #as.integer(mpi.remote.exec(.comm,comm=comm))
+        parent <-mpi.get.processor.name() 
+        childhost <- unlist(mpi.remote.exec(mpi.get.processor.name(),comm=comm))
+        childcomm <- 1 #as.integer(mpi.remote.exec(.comm,comm=comm))
         ranks <- 1:(size-1)
         commm <- paste(comm, ")",sep="")
         if (size > 10){
-        rank0 <- paste("master  (rank 0 , comm", commm)
+        rank0 <- paste("parent  (rank 0 , comm", commm)
             ranks <- c(paste(ranks[1:9]," ",sep=""), ranks[10:(size-1)])
         }
         else
-        rank0 <- paste("master (rank 0, comm", commm)
-        cat(rank0, "of size", size, "is running on:",master, "\n")
-        slavename <- paste("slave", ranks,sep="")
-        ranks <- paste("(rank ",ranks, ", comm ",slavecomm,")", sep="")
+        rank0 <- paste("parent (rank 0, comm", commm)
+        cat(rank0, "of size", size, "is running on:",parent, "\n")
+        childname <- paste("child", ranks,sep="")
+        ranks <- paste("(rank ",ranks, ", comm ",childcomm,")", sep="")
 		if (short && size > 8){
           for (i in 1:3) {
-            cat(slavename[i], ranks[i], "of size",size, 
-          "is running on:",slavehost[i], "\n")	
+            cat(childname[i], ranks[i], "of size",size, 
+          "is running on:",childhost[i], "\n")	
 		  }
 		  cat("... ... ...\n")
 		  for (i in (size-2):(size-1)){
-		    cat(slavename[i], ranks[i], "of size",size, 
-          "is running on:",slavehost[i], "\n")
+		    cat(childname[i], ranks[i], "of size",size, 
+          "is running on:",childhost[i], "\n")
 		  }
 		}
 		else {
           for (i in 1:(size-1)){
-            cat(slavename[i], ranks[i], "of size",size, 
-          "is running on:",slavehost[i], "\n")
+            cat(childname[i], ranks[i], "of size",size, 
+          "is running on:",childhost[i], "\n")
           }
 		}
     }
@@ -68,9 +68,9 @@ lamhosts <- function(){
     nn
 }
 
-mpi.spawn.Rslaves <- 
-    function(Rscript=system.file("slavedaemon.R", package="Rmpi"),
-    nslaves=mpi.universe.size(),
+mpi.spawn.Rchildren <- 
+    function(Rscript=system.file("childdaemon.R", package="Rmpi"),
+    nchildren=mpi.universe.size(),
     root=0,
     intercomm=2,
     comm=1,
@@ -83,7 +83,7 @@ mpi.spawn.Rslaves <-
     if (!is.loaded("mpi_comm_spawn"))
         stop("You cannot use MPI_Comm_spawn API")   
     if (mpi.comm.size(comm) > 0){
-         err <-paste("It seems there are some slaves running on comm ", comm)
+         err <-paste("It seems there are some children running on comm ", comm)
          stop(err)
     }
     if (.Platform$OS=="windows"){
@@ -101,12 +101,12 @@ mpi.spawn.Rslaves <-
         mapdrive <- as.logical(mapdrive && !is.null(remotepath))
         arg <- c(Rscript, R.home(), workdrive, workdir, localhost, mapdrive, remotepath)
 		if (.Platform$r_arch == "i386") 
-            realns <- mpi.comm.spawn(slave = system.file("Rslaves32.cmd", 
-				package = "Rmpi"), slavearg = arg, nslaves = nslaves, 
+            realns <- mpi.comm.spawn(child = system.file("Rchildren32.cmd", 
+				package = "Rmpi"), childarg = arg, nchildren = nchildren, 
 				info = 0, root = root, intercomm = intercomm, quiet = quiet)
 		else 
-			realns <- mpi.comm.spawn(slave = system.file("Rslaves64.cmd", 
-			            package = "Rmpi"), slavearg = arg, nslaves = nslaves, 
+			realns <- mpi.comm.spawn(child = system.file("Rchildren64.cmd", 
+			            package = "Rmpi"), childarg = arg, nchildren = nchildren, 
 				info = 0, root = root, intercomm = intercomm, quiet = quiet)
     }
     else{
@@ -124,43 +124,43 @@ mpi.spawn.Rslaves <-
                     mpi.universe.size()-1)
                 stop(tmp1)
             }
-            nslaves <- length(hosts)
+            nchildren <- length(hosts)
             tmpfile <-paste(tmp, "appschema", sep="") 
             fileobj <- file(tmpfile,"w")
             cat("c", paste(hosts, collapse=","), sep="", file=fileobj)
-            cat(" ", system.file("Rslaves.sh", package="Rmpi"), file=fileobj)
+            cat(" ", system.file("Rchildren.sh", package="Rmpi"), file=fileobj)
             cat(" ", paste(arg, collapse=" "), file=fileobj)
             close(fileobj)
             mpi.info.create(0)
             mpi.info.set(0,"file",tmpfile)
         }
 		if (length(unlist(strsplit(.Platform$pkgType,"mac"))) ==2 && .Platform$r_arch =="x86_64")
-			realns<-mpi.comm.spawn(slave=system.file("MacR64slaves.sh", package="Rmpi"),
-			slavearg=arg, nslaves=nslaves, info=0, root=root, intercomm=intercomm, quiet = quiet)
+			realns<-mpi.comm.spawn(child=system.file("MacR64children.sh", package="Rmpi"),
+			childarg=arg, nchildren=nchildren, info=0, root=root, intercomm=intercomm, quiet = quiet)
 		else 
-			realns<-mpi.comm.spawn(slave=system.file("Rslaves.sh", package="Rmpi"),
-			slavearg=arg, nslaves=nslaves, info=0, root=root, intercomm=intercomm, quiet = quiet)
+			realns<-mpi.comm.spawn(child=system.file("Rchildren.sh", package="Rmpi"),
+			childarg=arg, nchildren=nchildren, info=0, root=root, intercomm=intercomm, quiet = quiet)
 	}
     if (!is.null(hosts)){
         unlink(tmpfile)
         mpi.info.free(0)
     }
     if (realns==0)
-        stop("It seems no single slave spawned.")
+        stop("It seems no single child spawned.")
     if (mpi.intercomm.merge(intercomm,0,comm)) {
         mpi.comm.set.errhandler(comm)
         mpi.comm.disconnect(intercomm)
 		mpi.bcast(nonblock,type=1, rank=0, comm=comm)
 		mpi.bcast(sleep,type=2, rank=0, comm=comm)
-        if (!quiet) slave.hostinfo(comm)
+        if (!quiet) child.hostinfo(comm)
     }
     else
-        stop("Fail to merge the comm for master and slaves.")
+        stop("Fail to merge the comm for parent and children.")
 }   
 
 mpi.remote.exec <- function(cmd, ...,  simplify=TRUE, comm=1, ret=TRUE){
     if (mpi.comm.size(comm) < 2)
-    stop("It seems no slaves running.")
+    stop("It seems no children running.")
     tag <- floor(runif(1,20000,30000))
     scmd <- substitute(cmd)
     arg <-list(...)
@@ -189,7 +189,7 @@ mpi.remote.exec <- function(cmd, ...,  simplify=TRUE, comm=1, ret=TRUE){
             uplen <- cumsum(len)+1
             lowlen <-c(2, uplen[-(size-1)]+1)
                 out <- as.list(integer(size-1))
-                names(out) <- paste("slave",1:(size-1), sep="")
+                names(out) <- paste("child",1:(size-1), sep="")
                 for (i in 1:(size-1))
             out[[i]]<- out1[lowlen[i]:uplen[i]]
         }
@@ -206,7 +206,7 @@ mpi.remote.exec <- function(cmd, ...,  simplify=TRUE, comm=1, ret=TRUE){
             uplen <- cumsum(len)+1
             lowlen <-c(2, uplen[-(size-1)]+1)
                 out <- as.list(integer(size-1))
-                names(out) <- paste("slave",1:(size-1), sep="")
+                names(out) <- paste("child",1:(size-1), sep="")
                 for (i in 1:(size-1))
             out[[i]]<- out1[lowlen[i]:uplen[i]]
         }
@@ -223,7 +223,7 @@ mpi.remote.exec <- function(cmd, ...,  simplify=TRUE, comm=1, ret=TRUE){
             uplen <- cumsum(len)+1
             lowlen <-c(2, uplen[-(size-1)]+1)
                 out <- as.list(integer(size-1))
-                names(out) <- paste("slave",1:(size-1), sep="")
+                names(out) <- paste("child",1:(size-1), sep="")
                 for (i in 1:(size-1))
                     out[[i]]<- out1[lowlen[i]:uplen[i]]
         }
@@ -231,7 +231,7 @@ mpi.remote.exec <- function(cmd, ...,  simplify=TRUE, comm=1, ret=TRUE){
 
     else {
             out <- as.list(integer(size-1))
-            names(out) <- paste("slave",1:(size-1), sep="")
+            names(out) <- paste("child",1:(size-1), sep="")
             for (i in 1:(size-1)){
         tmp<- mpi.recv.Robj(mpi.any.source(),tag,comm)
         src <- mpi.get.sourcetag()[1] 
@@ -316,9 +316,9 @@ mpi.remote.exec <- function(cmd, ...,  simplify=TRUE, comm=1, ret=TRUE){
     }
 }
 
-mpi.close.Rslaves <- function(dellog=TRUE, comm=1){
+mpi.close.Rchildren <- function(dellog=TRUE, comm=1){
     if (mpi.comm.size(comm) < 2){
-    err <-paste("It seems no slaves running on comm", comm)
+    err <-paste("It seems no children running on comm", comm)
     stop(err)
     }
 	#mpi.break=delay(do.call("break",  list(), envir=.GlobalEnv))
@@ -341,21 +341,21 @@ mpi.close.Rslaves <- function(dellog=TRUE, comm=1){
 #   mpi.comm.set.errhandler(0)
 }
 
-tailslave.log <- function(nlines=3,comm=1){
+tailchild.log <- function(nlines=3,comm=1){
     if (mpi.comm.size(comm)==0)
-    stop ("It seems no slaves running")
+    stop ("It seems no children running")
     tmp <- paste(Sys.getpid(),"+",comm,sep="")  
     logfile <- paste("*.",tmp,".*.log", sep="")
     if (length(system(paste("ls", logfile),TRUE,ignore.stderr=TRUE))==0)
-    stop("It seems no slave log files.")
+    stop("It seems no child log files.")
     system(paste("tail -",nlines," ", logfile,sep=""))
 }
 
 mpi.apply <- function(X, FUN, ...,  comm=1){
     n <- length(X)
-    nslaves <- mpi.comm.size(comm)-1
-     if (nslaves < n)
-        stop("data length must be at most total slave size")
+    nchildren <- mpi.comm.size(comm)-1
+     if (nchildren < n)
+        stop("data length must be at most total child size")
     if (!is.function(FUN))
         stop("FUN is not a function")
     length(list(...)) #test for any non existing R objects
@@ -363,9 +363,9 @@ mpi.apply <- function(X, FUN, ...,  comm=1){
     mpi.bcast.cmd(.mpi.worker.apply, n=n, tag=tag, comm=comm)
     #mpi.bcast(as.integer(c(tag,n)),type=1,comm=comm)
     mpi.bcast.Robj(list(FUN=FUN,dot.arg=list(...)),rank=0,comm=comm)
-    if (n < nslaves)
-        X=c(X,as.list(integer( nslaves-n)))
-    mpi.scatter.Robj(c(list("master"),as.list(X)),root=0,comm=comm)
+    if (n < nchildren)
+        X=c(X,as.list(integer( nchildren-n)))
+    mpi.scatter.Robj(c(list("parent"),as.list(X)),root=0,comm=comm)
 
     out <- as.list(integer(n))
     for (i in 1:n){
@@ -394,9 +394,9 @@ mpi.apply <- function(X, FUN, ...,  comm=1){
 
 mpi.iapply <- function(X, FUN, ...,  comm=1, sleep=0.01){
     n <- length(X)
-    nslaves <- mpi.comm.size(comm)-1
-     if (nslaves < n)
-        stop("data length must be at most total slave size")
+    nchildren <- mpi.comm.size(comm)-1
+     if (nchildren < n)
+        stop("data length must be at most total child size")
     if (!is.function(FUN))
         stop("FUN is not a function")
     length(list(...)) #test for any non existing R objects
@@ -404,9 +404,9 @@ mpi.iapply <- function(X, FUN, ...,  comm=1, sleep=0.01){
     mpi.bcast.cmd(.mpi.worker.apply, n=n, tag=tag,comm=comm)
     #mpi.bcast(as.integer(c(tag,n)),type=1,comm=comm)
     mpi.bcast.Robj(list(FUN=FUN,dot.arg=list(...)),rank=0,comm=comm)
-    if (n < nslaves)
-        X=c(X,as.list(integer( nslaves-n)))
-    mpi.scatter.Robj(c(list("master"),as.list(X)),root=0,comm=comm)
+    if (n < nchildren)
+        X=c(X,as.list(integer( nchildren-n)))
+    mpi.scatter.Robj(c(list("parent"),as.list(X)),root=0,comm=comm)
 
     out <- as.list(integer(n))
     done=0
@@ -429,11 +429,11 @@ mpi.iapply <- function(X, FUN, ...,  comm=1, sleep=0.01){
 }
 
 mpi.parSim <- function(n=100,rand.gen=rnorm, rand.arg=NULL, 
-            statistic, nsim=100, run=1, slaveinfo=FALSE, sim.seq=NULL,
+            statistic, nsim=100, run=1, childinfo=FALSE, sim.seq=NULL,
             simplify=TRUE, comm=1, ...){
 	sim.seq=NULL
     if (mpi.comm.size(comm) < 2)
-        stop("It seems no slaves running.")
+        stop("It seems no children running.")
     if (!is.function(rand.gen))
         stop("rand.gen is not a function")
     if (!is.function(statistic))
@@ -444,12 +444,12 @@ mpi.parSim <- function(n=100,rand.gen=rnorm, rand.arg=NULL,
     if (length(list(...))>0)
         deparse(list(...))
         
-    slave.num <- mpi.comm.size(comm)-1
+    child.num <- mpi.comm.size(comm)-1
     if (!is.null(sim.seq))
         if (!is.integer(sim.seq))
             stop("sim.seq is not an integer vector")
-        else if (min(sim.seq)<1 && max(sim.seq)>slave.num && 
-                length(sim.seq)!=slave.num*run)
+        else if (min(sim.seq)<1 && max(sim.seq)>child.num && 
+                length(sim.seq)!=child.num*run)
             stop("sim.seq is not in right order")
 
     mpi.bcast.cmd(.mpi.worker.sim, n=n, nsim=nsim, run=run, comm=comm)  
@@ -458,39 +458,39 @@ mpi.parSim <- function(n=100,rand.gen=rnorm, rand.arg=NULL,
 
     #nnr <- c(n,nsim,run)
     #mpi.bcast(as.integer(nnr),type=1, comm=comm)
-    result <- as.list(integer(slave.num*run))
+    result <- as.list(integer(child.num*run))
 
     if (!is.null(sim.seq)){
-        for ( i in 1:(slave.num*run)){
+        for ( i in 1:(child.num*run)){
             result[[i]] <- mpi.recv.Robj(source=sim.seq[i], tag=8, comm=comm)
             mpi.send(as.integer(i), type=1, dest=sim.seq[i], tag=88, comm=comm)
         }
-        return(.simplify(slave.num*run, result, simplify, nsim))
+        return(.simplify(child.num*run, result, simplify, nsim))
     }
 
     i <- 0
     anysrc <- mpi.any.source()
     anytag <- mpi.any.tag()
-    mpi.parSim.tmp <- integer(slave.num*run)
-    while (i < slave.num*run){
+    mpi.parSim.tmp <- integer(child.num*run)
+    while (i < child.num*run){
         i <- i+1
         result[[i]] <- mpi.recv.Robj(source=anysrc, tag=8, comm=comm)
         src <- mpi.get.sourcetag()[1]
         mpi.send(as.integer(i), type=1, dest=src, tag=88, comm=comm)
         mpi.parSim.tmp[i] <- src
     }
-    if (slaveinfo){
-        slavename <- paste("slave",1:slave.num, sep="")
-        cat("Finished slave jobs summary:\n")
-        for (i in 1:slave.num){
+    if (childinfo){
+        childname <- paste("child",1:child.num, sep="")
+        cat("Finished child jobs summary:\n")
+        for (i in 1:child.num){
             if (i < 10)
-                cat(slavename[i], " finished",sum(mpi.parSim==i), "job(s)\n")
+                cat(childname[i], " finished",sum(mpi.parSim==i), "job(s)\n")
             else
-                cat(slavename[i], "finished",sum(mpi.parSim==i), "job(s)\n")
+                cat(childname[i], "finished",sum(mpi.parSim==i), "job(s)\n")
         }
     }
 	#assign(".mpi.parSim", mpi.parSim.tmp,  envir = .GlobalEnv)
-    .simplify(slave.num*run, result, simplify, nsim)
+    .simplify(child.num*run, result, simplify, nsim)
 }
 
 .mpi.worker.sim <- function(n, nsim, run){
@@ -506,9 +506,9 @@ mpi.parSim <- function(n=100,rand.gen=rnorm, rand.arg=NULL,
     #n <- nnr[1];  nsim <- nnr[2];  run <- nnr[3]
 
     i <- 0
-    slave.num <- mpi.comm.size(.comm)-1
+    child.num <- mpi.comm.size(.comm)-1
     
-    while( i < slave.num*(run-1)+1){
+    while( i < child.num*(run-1)+1){
         out <- replicate(nsim, do.call(".tmp.statistic", c(list(do.call(".tmp.rand.gen", 
                             c(list(n),rand.arg))), stat.arg)))
        
@@ -555,10 +555,10 @@ mpi.iparMM <- function(A, B, comm=1, sleep=0.01){
 mpi.applyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1){
 	apply.seq=NULL
     n <- length(X)
-    slave.num <- mpi.comm.size(comm)-1
-    if (slave.num < 1)
-        stop("There are no slaves running")
-    if (n <= slave.num) {
+    child.num <- mpi.comm.size(comm)-1
+    if (child.num < 1)
+        stop("There are no children running")
+    if (n <= child.num) {
         if (exists(".mpi.applyLB")) 
 			rm(".mpi.applyLB",  envir=.GlobalEnv)
         return (mpi.apply(X,FUN,...,comm=comm))
@@ -569,7 +569,7 @@ mpi.applyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1){
     if (!is.null(apply.seq))
         if (!is.integer(apply.seq))
             stop("apply.seq is not an integer vector")
-        else if (min(apply.seq)<1 && max(apply.seq)>slave.num && 
+        else if (min(apply.seq)<1 && max(apply.seq)>child.num && 
                 length(apply.seq)!=n)
             stop("apply.seq is not in right order")
             
@@ -579,7 +579,7 @@ mpi.applyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1){
     out <- as.list(integer(n))
     mpi.anysource <- mpi.any.source()
     mpi.anytag <- mpi.any.tag()
-    for (i in 1:slave.num)
+    for (i in 1:child.num)
         mpi.send.Robj(list(data.arg=list(X[[i]])), dest=i,tag=i, comm=comm)
   
     if (!is.null(apply.seq)){
@@ -587,7 +587,7 @@ mpi.applyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1){
             tmp <- mpi.recv.Robj(source=apply.seq[i], tag=mpi.anytag, comm=comm)
             tag <- mpi.get.sourcetag()[2]
             out[[tag]]<- tmp
-            j <- i+slave.num
+            j <- i+child.num
             if (j <= n)
                 mpi.send.Robj(list(data.arg=list(X[[j]])), dest=apply.seq[i],tag=j, comm=comm)
             else
@@ -602,7 +602,7 @@ mpi.applyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1){
        srctag <- mpi.get.sourcetag()
        out[[srctag[2]]]<- tmp
        mpi.seq.tmp[i] <- srctag[1]
-       j <- i+slave.num
+       j <- i+child.num
        if (j <= n)
             mpi.send.Robj(list(data.arg=list(X[[j]])), dest=srctag[1],tag=j, comm=comm)
        else
@@ -635,23 +635,23 @@ mpi.applyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1){
 mpi.iapplyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1, sleep=0.01){
 	apply.seq=NULL
     n <- length(X)
-    slave.num <- mpi.comm.size(comm)-1
-    if (slave.num < 1)
-        stop("There are no slaves running")
-    if (n <= slave.num) {
+    child.num <- mpi.comm.size(comm)-1
+    if (child.num < 1)
+        stop("There are no children running")
+    if (n <= child.num) {
         if (exists(".mpi.applyLB"))
             rm(".mpi.applyLB",  envir =.GlobalEnv)
         return (mpi.iapply(X,FUN,...,comm=comm,sleep=sleep))
     }
     if (!is.function(FUN))
         stop("FUN is not a function")
-    if (slave.num > 2000)
-        stop("Total slaves are more than nonblock send/receive can handle")
+    if (child.num > 2000)
+        stop("Total children are more than nonblock send/receive can handle")
     length(list(...))
     if (!is.null(apply.seq))
         if (!is.integer(apply.seq))
             stop("apply.seq is not an integer vector")
-        else if (min(apply.seq)<1 && max(apply.seq)>slave.num &&
+        else if (min(apply.seq)<1 && max(apply.seq)>child.num &&
                 length(apply.seq)!=n)
             stop("apply.seq is not in right order")
 
@@ -661,17 +661,17 @@ mpi.iapplyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1, sleep=0.01){
     out <- as.list(integer(n))
     mpi.anysource <- mpi.any.source()
     mpi.anytag <- mpi.any.tag()
-    for (i in 1:slave.num)
+    for (i in 1:child.num)
         mpi.send.Robj(list(data.arg=list(X[[i]])), dest=i,tag=i,comm=comm)
-    #for (i in 1:slave.num)
-    #    mpi.waitany(slave.num)
+    #for (i in 1:child.num)
+    #    mpi.waitany(child.num)
 
     if (!is.null(apply.seq)){
        i=0
        repeat {
         if (mpi.iprobe(apply.seq[i+1],mpi.anytag,comm)){
             i=i+1
-            j <- i+slave.num
+            j <- i+child.num
             if ( j <= n)
                 mpi.send.Robj(list(data.arg=list(X[[j]])), dest=apply.seq[i],tag=j, comm=comm) 
             else
@@ -696,7 +696,7 @@ mpi.iapplyLB <- function(X, FUN, ...,  apply.seq=NULL, comm=1, sleep=0.01){
             srctag <- mpi.get.sourcetag()
             src <- srctag[1]
             tag <- srctag[2]
-            j <- i+slave.num
+            j <- i+child.num
             if ( j <= n)
                 mpi.send.Robj(list(data.arg=list(X[[j]])), dest=src,tag=j, comm=comm)
             else

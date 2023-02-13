@@ -13,12 +13,12 @@ APIs}
   \item{comm}{an intercommunicator number.}
 }
 \description{
-  \code{mpi.comm.get.parent} is mainly used by slaves to find the 
+  \code{mpi.comm.get.parent} is mainly used by children to find the 
 intercommunicator or the parent who spawns them. The intercommunicator is saved 
 in the specified comm number.
 
-\code{mpi.comm.remote.size} is mainly used by master to find the total number of 
-slaves spawned.
+\code{mpi.comm.remote.size} is mainly used by parent to find the total number of 
+children spawned.
 
 \code{mpi.comm.test.inter} tests if a comm is an intercomm or not.
 }

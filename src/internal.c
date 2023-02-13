@@ -153,7 +153,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"mpi_comm_test_inter", (DL_FUNC) &mpi_comm_test_inter, 1},
 	{"mpi_comm_spawn", (DL_FUNC) &mpi_comm_spawn, 7},
 	{"mpi_comm_get_parent", (DL_FUNC) &mpi_comm_get_parent, 1},
-	{"mpi_is_master", (DL_FUNC) &mpi_is_master, 0},
+	{"mpi_is_parent", (DL_FUNC) &mpi_is_parent, 0},
 	{"mpi_comm_disconnect", (DL_FUNC) &mpi_comm_disconnect, 1},
 	{"mpi_intercomm_merge", (DL_FUNC) &mpi_intercomm_merge, 3},
 	{"mpi_comm_remote_size", (DL_FUNC) &mpi_comm_remote_size, 1},

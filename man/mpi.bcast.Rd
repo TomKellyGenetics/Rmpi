@@ -29,7 +29,7 @@ mpi.bcast(x, type, rank = 0, comm = 1, buffunit=100)
   types of data to receive, not mention the length of data. Users should 
   use various extensions of \code{mpi.bcast} in R. They are 
   \code{\link{mpi.bcast.Robj}}, \code{\link{mpi.bcast.cmd}}, and 
-  \code{\link{mpi.bcast.Robj2slave}}.
+  \code{\link{mpi.bcast.Robj2child}}.
   
   When type=5, MPI continuous datatype (double) is defined with unit given by 
   \code{buffunit}. It is used to transfer huge data where a double vector or matrix
@@ -44,7 +44,7 @@ mpi.bcast(x, type, rank = 0, comm = 1, buffunit=100)
 \seealso{
   \code{\link{mpi.bcast.Robj}},
   \code{\link{mpi.bcast.cmd}},
-  \code{\link{mpi.bcast.Robj2slave}}.
+  \code{\link{mpi.bcast.Robj2child}}.
 }
 %\examples{
 %}

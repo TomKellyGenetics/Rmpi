@@ -19,7 +19,7 @@
 	#e <- environment() 
 	#f <- function(e){
 	#	if (mpi.comm.size(1)>0)
-	#		mpi.close.Rslaves()
+	#		mpi.close.Rchildren()
 	#}
 	#reg.finalizer(e, f, onexit=TRUE)
 }

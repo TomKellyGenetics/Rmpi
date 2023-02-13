@@ -4,7 +4,7 @@ set Rscript=%1%
 set R_HOME=%2%
 set WDrive=%3%
 set WDir=%4%
-set Master=%5%
+set Parent=%5%
 set MapDrive=%6%
 set RemotePath=%7%
 
@@ -24,7 +24,7 @@ net use /delete %WDrive%:
 goto:eof
 
 :last
-if %Master% == %COMPUTERNAME% (
+if %Parent% == %COMPUTERNAME% (
 %R_HOME%\bin\i386\Rscript.exe --vanilla %Rscript%
 goto:eof 
 )

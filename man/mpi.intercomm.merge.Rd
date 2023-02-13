@@ -14,11 +14,11 @@ when creating the new communicator}
   Creates an intracommunicator from an intercommunicator 
 }
 \details{
-  When master spawns slaves, an intercommunicator is created. To make 
-  communications (point-to-point or groupwise) among master and slaves, an 
+  When parent spawns children, an intercommunicator is created. To make 
+  communications (point-to-point or groupwise) among parent and children, an 
   intracommunicator must be created. \code{mpi.intercomm.merge} is used for 
-  that purpose. This is a collective call so all master and slaves call 
-  together. R slaves spawned by \code{\link{mpi.spawn.Rslaves}} should use
+  that purpose. This is a collective call so all parent and children call 
+  together. R children spawned by \code{\link{mpi.spawn.Rchildren}} should use
 \code{\link{mpi.comm.get.parent}} to get (set) an intercomm to a number followed 
 by merging antercomm to an intracomm. One 
 can use \code{\link{mpi.comm.test.inter}} to test if a 

@@ -34,7 +34,7 @@ mpi.allreduce(x, type=2, op=c("sum","prod","max","min","maxloc","minloc"),
 }
 \details{
   It is important that all members in a comm call either all \code{mpi.reduce} 
-  or all \code{mpi.allreduce} even though the master may not be in 
+  or all \code{mpi.allreduce} even though the parent may not be in 
   computation. They must provide exactly the same type and dim 
   vectors to be reduced. If the operation "maxloc" or "minloc" is used, 
   the combined vector is twice as long as the original one since the 

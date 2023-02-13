@@ -7,13 +7,13 @@ int main(int argc, char **argv){
         int rank, size;
 	double mypi, pi, h, sum, x;
 
-        MPI_Comm slavecomm, all_processes;
+        MPI_Comm childcomm, all_processes;
 
         /*Initialize MPI*/
         MPI_Init(&argc, &argv); 
         
-        MPI_Comm_get_parent(&slavecomm);
-        MPI_Intercomm_merge(slavecomm, 1, &all_processes);
+        MPI_Comm_get_parent(&childcomm);
+        MPI_Intercomm_merge(childcomm, 1, &all_processes);
 
         /*How many processes are there?*/
         MPI_Comm_size(all_processes, &size);

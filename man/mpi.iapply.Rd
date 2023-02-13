@@ -39,13 +39,13 @@ mpi.iparMM(A, B, comm=1, sleep=0.01)
   \item{A}{a matrix}
   \item{B}{a matrix}
   \item{expr}{expression to evaluate repeatedly.}
-  \item{job.num}{Total job numbers. If job numbers is bigger than total slave numbers (default 
+  \item{job.num}{Total job numbers. If job numbers is bigger than total child numbers (default 
 value), a load balancing approach is used.}
   \item{apply.seq}{if reproducing the same computation (simulation) is desirable, set it 
 to the integer vector .mpi.applyLB generated in previous computation (simulation).}
   \item{...}{optional arguments to \code{Fun}}
   \item{comm}{a communicator number}
-  \item{sleep}{a sleep interval on master node (in sec)}
+  \item{sleep}{a sleep interval on parent node (in sec)}
 }
 \details{
 \code{mpi.iparApply}, \code{mpi.iparLapply}, \code{mpi.iparSapply}, \code{mpi.iparRapply}, 
@@ -53,11 +53,11 @@ to the integer vector .mpi.applyLB generated in previous computation (simulation
  are nonblocking versions of \code{mpi.parApply}, \code{mpi.parLapply}, \code{mpi.parSapply}, 
 \code{mpi.parRapply}, \code{mpi.parCapply}, \code{mpi.parSapply}, \code{mpi.parReplicate}, 
 and \code{mpi.parMM} respectively. The main difference is that \code{mpi.iprobe} and 
-\code{Sys.sleep} are used so that master node consumes almost no CPU cycles while waiting for 
-slaves results. However, due to frequent wake/sleep cycles on master, those functions are not 
-suitable for running small jobs on slave nodes. If anticipated computing time for each job is 
+\code{Sys.sleep} are used so that parent node consumes almost no CPU cycles while waiting for 
+children results. However, due to frequent wake/sleep cycles on parent, those functions are not 
+suitable for running small jobs on child nodes. If anticipated computing time for each job is 
 relatively long, e.g., minutes or hours, setting sleep to be 1 second or longer will further 
-reduce load on master (only slightly).
+reduce load on parent (only slightly).
  }
 \seealso{
 \code{\link{mpi.iapply}}

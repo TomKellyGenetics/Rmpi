@@ -64,16 +64,16 @@ mpi.scatter.Robj <- function(obj=NULL, root=0, comm=1){
     return(outobj)
 }
 
-mpi.scatter.Robj2slave=function (obj, comm = 1) {
+mpi.scatter.Robj2child=function (obj, comm = 1) {
     if (!is.list(obj))
-        stop("Only list object is allowed to scatter to slaves.")
+        stop("Only list object is allowed to scatter to children.")
     if (length(obj) != (mpi.comm.size(comm)-1)) 
-        stop("Length of your list object is not the same as total number of slaves.")
+        stop("Length of your list object is not the same as total number of children.")
     .tmpname <- list(objname=deparse(substitute(obj), width.cutoff = 500))
-    mpi.bcast.Robj2slave(.tmpname)
+    mpi.bcast.Robj2child(.tmpname)
     mpi.bcast.cmd(cmd = .tmpRobj <- mpi.scatter.Robj(comm = 1), 
         rank = 0, comm = comm)
-    mpi.scatter.Robj(obj=c(list("master"),obj), root = 0, comm = comm)
+    mpi.scatter.Robj(obj=c(list("parent"),obj), root = 0, comm = comm)
     mpi.bcast.cmd(cmd = assign(.tmpname$objname, .tmpRobj), rank = 0, comm = comm)
 }
 
@@ -213,7 +213,7 @@ mpi.bcast.Robj <- function(obj=NULL, rank=0, comm=1){
     }
 }
 
-mpi.bcast.Robj2slave <- function(obj, comm=1, all=FALSE){
+mpi.bcast.Robj2child <- function(obj, comm=1, all=FALSE){
     if (!all){
 		objname <- deparse(substitute(obj),width.cutoff=500)
 		obj <- list(objname=objname,obj=obj)
@@ -224,37 +224,37 @@ mpi.bcast.Robj2slave <- function(obj, comm=1, all=FALSE){
 		#mpi.bcast.cmd(rm(.tmpRobj,envir = .GlobalEnv), rank=0, comm=comm) 
 	}
 	else {
-		master.objects <-objects(envir=.GlobalEnv)
-		obj.num=length(master.objects)
+		parent.objects <-objects(envir=.GlobalEnv)
+		obj.num=length(parent.objects)
 		if (obj.num)
 			for (i in 1:obj.num){
 				mpi.bcast.cmd(cmd=.tmpRobj <- mpi.bcast.Robj(comm=1),
                     rank=0, comm=comm)
-				mpi.bcast.Robj(list(objname=master.objects[i], obj=get(master.objects[i])), 
+				mpi.bcast.Robj(list(objname=parent.objects[i], obj=get(parent.objects[i])), 
 					rank=0, comm=comm)
 				mpi.bcast.cmd(cmd=assign(.tmpRobj$objname,.tmpRobj$obj), rank=0, comm=comm)
 			}
 	}
 }
 
-mpi.bcast.Rfun2slave <- function(comm=1){
-	master.fun <-objects(envir=.GlobalEnv)
-	sync.index <- which(lapply(lapply(master.fun, get), is.function)==1)
+mpi.bcast.Rfun2child <- function(comm=1){
+	parent.fun <-objects(envir=.GlobalEnv)
+	sync.index <- which(lapply(lapply(parent.fun, get), is.function)==1)
 	obj.num=length(sync.index)
 	if (obj.num)
 		for (i in sync.index){
 			mpi.bcast.cmd(cmd=.tmpRobj <- mpi.bcast.Robj(comm=1),
                    rank=0, comm=comm)
-			mpi.bcast.Robj(list(objname=master.fun[i], obj=get(master.fun[i])), 
+			mpi.bcast.Robj(list(objname=parent.fun[i], obj=get(parent.fun[i])), 
 				rank=0, comm=comm)
 			mpi.bcast.cmd(cmd=assign(.tmpRobj$objname,.tmpRobj$obj), rank=0, comm=comm)
 		}
 }
 
-mpi.bcast.data2slave <- function(obj, comm=1, buffunit=100){
+mpi.bcast.data2child <- function(obj, comm=1, buffunit=100){
 	if (!is.numeric(obj) || (!is.vector(obj) && !is.matrix(obj)))
-		return (mpi.bcast.Robj2slave(obj, comm=comm))
-		#stop ("Please use mpi.bcast.Robj2slave")
+		return (mpi.bcast.Robj2child(obj, comm=comm))
+		#stop ("Please use mpi.bcast.Robj2child")
 		
 	objname <- serialize(deparse(substitute(obj),width.cutoff=500),NULL)
 	obj.info = integer(4)

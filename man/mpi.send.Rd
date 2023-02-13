@@ -63,7 +63,7 @@ such as \code{\link{mpi.wait}} or \code{\link{mpi.test}} to test if
 
 If multiple nonblocking sends or receives are used, please use request 
 number consecutively from 0. For example, to receive two messages from two 
-slaves, try 
+children, try 
 mpi.irecv(x,1,source=1,tag=0,comm=1,request=0)
 mpi.irecv(y,1,source=2,tag=0,comm=1,request=1)
 Then \code{mpi.waitany}, \code{mpi.waitsome} or \code{mpi.waitall} can be 
@@ -85,10 +85,10 @@ Hao Yu
 } 
 \examples{ 
 \donttest{
-#on a slave
+#on a child
 mpi.send(1:10,1,0,0)
 
-#on master
+#on parent
 x <- integer(10)
 mpi.irecv(x,1,1,0)
 x	

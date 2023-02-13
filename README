@@ -1,5 +1,5 @@
 Rmpi is an R package providing an interface to MPI (Message-Passing Interface) 
-API calls with interactive R slave functionalities. 
+API calls with interactive R child functionalities. 
 
 Copyright (C) 2014 Hao Yu <hyu@stats.uwo.ca>
 

@@ -35,7 +35,7 @@ Alek Hunchak and Hao Yu
 }
 \examples{
 \donttest{
-#Need at least 9 slaves
+#Need at least 9 children
 mpi.bcast.cmd(mpi.cart.create(1,c(3,3),c(F,T)))
 mpi.cart.create(1,c(3,3),c(F,T))
 mpi.remote.exec(mpi.cart.shift(3,2,1))#get neighbor ranks

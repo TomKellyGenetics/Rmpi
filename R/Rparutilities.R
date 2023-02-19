@@ -333,9 +333,13 @@ mpi.close.Rslaves <- function(dellog=TRUE, comm=1){
     }
 #     mpi.barrier(comm)
     if (comm >0){
-        #if (is.loaded("mpi_comm_disconnect"))
-            #mpi.comm.disconnect(comm) 
-        #else
+        if (is.loaded("mpi_comm_disconnect")){
+            if (Sys.getenv("PMIX_NAMESPACE")=="")
+                mpi.comm.disconnect(comm)
+            else
+                mpi.comm.free(comm)
+        }
+         else
             mpi.comm.free(comm)
     }
 #   mpi.comm.set.errhandler(0)

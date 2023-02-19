@@ -43,7 +43,7 @@ Hao Yu and Wei Xia
 }
 \examples{
 \donttest{
-#Assume that there are some children running
+#Assume that there are some workers running
 mpi.bcast.cmd(id<-mpi.comm.rank())
 mpi.bcast.cmd(x<-rnorm(id))
 mpi.bcast.cmd(mpi.gather.Robj(x))

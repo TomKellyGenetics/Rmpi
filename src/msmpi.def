@@ -139,7 +139,7 @@ MPI_Comm_free_keyval
 MPI_Comm_get_attr
 MPI_Comm_get_errhandler
 MPI_Comm_get_name
-MPI_Comm_get_parent
+MPI_Comm_get_manager
 MPI_Comm_group
 MPI_Comm_join
 MPI_Comm_rank
@@ -796,7 +796,7 @@ PMPI_Comm_free_keyval
 PMPI_Comm_get_attr
 PMPI_Comm_get_errhandler
 PMPI_Comm_get_name
-PMPI_Comm_get_parent
+PMPI_Comm_get_manager
 PMPI_Comm_group
 PMPI_Comm_join
 PMPI_Comm_rank
@@ -1493,9 +1493,9 @@ mpi_comm_get_errhandler__
 mpi_comm_get_name
 mpi_comm_get_name_
 mpi_comm_get_name__
-mpi_comm_get_parent
-mpi_comm_get_parent_
-mpi_comm_get_parent__
+mpi_comm_get_manager
+mpi_comm_get_manager_
+mpi_comm_get_manager__
 mpi_comm_group
 mpi_comm_group_
 mpi_comm_group__
@@ -2508,9 +2508,9 @@ pmpi_comm_get_errhandler__
 pmpi_comm_get_name
 pmpi_comm_get_name_
 pmpi_comm_get_name__
-pmpi_comm_get_parent
-pmpi_comm_get_parent_
-pmpi_comm_get_parent__
+pmpi_comm_get_manager
+pmpi_comm_get_manager_
+pmpi_comm_get_manager__
 pmpi_comm_group
 pmpi_comm_group_
 pmpi_comm_group__

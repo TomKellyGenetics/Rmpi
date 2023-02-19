@@ -1,15 +1,15 @@
-cchildPI	R function to use external C program cchildPI.
-		Copy cchildPI.c in Rmpi library directory to your 
+cworkerPI	R function to use external C program cworkerPI.
+		Copy cworkerPI.c in Rmpi library directory to your 
 		working directory and compile as "mpicc -o 
-		cchildPI cchildPI.c"
-parentchildPI 	R script to compute PI=4*\int_0^1 1/(1+x^2) dx.
+		cworkerPI cworkerPI.c"
+managerworkerPI 	R script to compute PI=4*\int_0^1 1/(1+x^2) dx.
 simPI		Use Monto Carlo simulation to compute PI (with plot). 
                 Use simPI to run the program. Run mpi.setup.rngstream
 		to setup a parallel RNG.
-simplePI 	R function to compute PI using childdaemon.R. 
-child1PI 	R functions to compute PI using childdaemon.R (load 
-		balancing with a server and workers). Use parent1PI to 
+simplePI 	R function to compute PI using workerdaemon.R. 
+worker1PI 	R functions to compute PI using workerdaemon.R (load 
+		balancing with a server and workers). Use manager1PI to 
 		run the program.
-child2PI 	R functions to compute PI using childdaemon.R (load 
-		balancing with workers only). Use parent2PI to run the 
+worker2PI 	R functions to compute PI using workerdaemon.R (load 
+		balancing with workers only). Use manager2PI to run the 
 		program.

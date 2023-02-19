@@ -39,7 +39,7 @@ mpi.parMM (A, B, job.num=mpi.comm.size(comm)-1, comm=1)
   \item{A}{a matrix}
   \item{B}{a matrix}
   \item{expr}{expression to evaluate repeatedly.}
-  \item{job.num}{Total job numbers. If job numbers is bigger than total child numbers (default 
+  \item{job.num}{Total job numbers. If job numbers is bigger than total worker numbers (default 
 value), a load balancing approach is used.}
   \item{apply.seq}{if reproducing the same computation (simulation) is desirable, set it 
 to the integer vector .mpi.applyLB generated in previous computation (simulation).}
@@ -47,30 +47,30 @@ to the integer vector .mpi.applyLB generated in previous computation (simulation
   \item{comm}{a communicator number}
 }
 \details{
-Unless length of \code{X} is no more than total child numbers (child.num) and in this case 
+Unless length of \code{X} is no more than total worker numbers (worker.num) and in this case 
 \code{mpi.applyLB} is the same as \code{mpi.apply}, \code{mpi.applyLB} sends a next job to a 
-child who just delivered a finished job. The sequence of children who deliver results to parent are 
-saved into \code{.mpi.applyLB}. It keeps track which part of results done by which children. 
+worker who just delivered a finished job. The sequence of workers who deliver results to manager are 
+saved into \code{.mpi.applyLB}. It keeps track which part of results done by which workers. 
 \code{.mpi.applyLB} can be used to reproduce the same simulation result if the same seed is 
 used and the argument \code{apply.seq} is equal to \code{.mpi.applyLB}.
  
-With the default value of argument \code{job.num} which is child.num, \code{mpi.parApply}, 
+With the default value of argument \code{job.num} which is worker.num, \code{mpi.parApply}, 
 \code{mpi.parLapply}, \code{mpi.parSapply}, \code{mpi.parRapply}, \code{mpi.parCapply}, 
 \code{mpi.parSapply}, and \code{mpi.parMM} are clones of \pkg{snow}'s parApply, parLappy, 
 parSapply, parRapply, parCapply, parSapply, and parMM, respectively. When \code{job.num} is 
-bigger than child.num, a load balancing approach is used.
+bigger than worker.num, a load balancing approach is used.
  }
 \section{Warning}{
 When using the argument \code{apply.seq} with \code{.mpi.applyLB}, be sure all settings are the same 
-as before, i.e., the same data, job.num, child.num, and seed. Otherwise a deadlock could occur. 
-Notice that \code{apply.seq} is useful only if \code{job.num} is bigger than child.num. 
+as before, i.e., the same data, job.num, worker.num, and seed. Otherwise a deadlock could occur. 
+Notice that \code{apply.seq} is useful only if \code{job.num} is bigger than worker.num. 
 }
 \seealso{
 \code{\link{mpi.apply}}
 }
 \examples{
 \donttest{
-#Assume that there are some children running
+#Assume that there are some workers running
 
 #mpi.applyLB
 x=1:7

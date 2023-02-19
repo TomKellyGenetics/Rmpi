@@ -1,4 +1,4 @@
-child1 <- function (){
+worker1 <- function (){
     n <- mpi.bcast(integer(1),1,comm=.comm)
     request <-1
     job <-2
@@ -15,12 +15,12 @@ child1 <- function (){
 	   tag <- mpi.get.sourcetag()[2]
 	   done <- done+(tag==0)
 	} 
-	#send the final result to parent
+	#send the final result to manager
 	mpi.send(mypi,2,dest=0,tag=3,comm=.comm)
     }
     else {	# the workers that do the real jobs
     	while (1) {
-    	    #send parent a request
+    	    #send manager a request
     	    mpi.send(integer(1),type=1,dest=0,tag=request,comm=.comm)
     	    jobrange<-mpi.recv(integer(2),type=1,source=0,
 			tag=anytag,comm=.comm)
@@ -37,18 +37,18 @@ child1 <- function (){
     }
 }
 
-parent1PI <- function (n,maxjoblen,comm=1) 
+manager1PI <- function (n,maxjoblen,comm=1) 
 {
     tsize <- mpi.comm.size(comm)
     if (tsize <3)
-	stop("Need at least 2 children")
-    #send the function child1 to all children
-     mpi.bcast.Robj2child(child1, comm=comm)
+	stop("Need at least 2 workers")
+    #send the function worker1 to all workers
+     mpi.bcast.Robj2worker(worker1, comm=comm)
 
-    #let child run the function child1
-    mpi.bcast.cmd(child1(), comm=comm)
+    #let worker run the function worker1
+    mpi.bcast.cmd(worker1(), comm=comm)
 
-    #send n to all children	
+    #send n to all workers	
     mpi.bcast(as.integer(n),type=1,comm=comm)
     
     count <- 0

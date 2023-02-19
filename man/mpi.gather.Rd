@@ -56,8 +56,8 @@ Hao Yu
 }
 \examples{
 \donttest{
-#Need 3 children to run properly
-#Or use mpi.spawn.Rchildren(nchildren=3)
+#Need 3 workers to run properly
+#Or use mpi.spawn.Rworkers(nworkers=3)
  mpi.bcast.cmd(id <-mpi.comm.rank(.comm), comm=1)
 mpi.bcast.cmd(mpi.gather(letters[id],type=3,rdata=string(1)))
 mpi.gather(letters[10],type=3,rdata=string(4))

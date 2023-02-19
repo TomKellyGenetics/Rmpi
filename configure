@@ -311,7 +311,7 @@ as_fn_exit ()
 
 # as_fn_mkdir_p
 # -------------
-# Create "$as_dir" as a directory, including parents if necessary.
+# Create "$as_dir" as a directory, including managers if necessary.
 as_fn_mkdir_p ()
 {
 
@@ -1178,7 +1178,7 @@ test "X$ac_ls_di" = "X$ac_pwd_ls_di" ||
 # Find the source files, if location was not specified.
 if test -z "$srcdir"; then
   ac_srcdir_defaulted=yes
-  # Try the directory containing this script, then the parent directory.
+  # Try the directory containing this script, then the manager directory.
   ac_confdir=`$as_dirname -- "$as_myself" ||
 $as_expr X"$as_myself" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
 	 X"$as_myself" : 'X\(//\)[^/]' \| \
@@ -4269,7 +4269,7 @@ rmdir conf$$.dir 2>/dev/null
 
 # as_fn_mkdir_p
 # -------------
-# Create "$as_dir" as a directory, including parents if necessary.
+# Create "$as_dir" as a directory, including managers if necessary.
 as_fn_mkdir_p ()
 {
 

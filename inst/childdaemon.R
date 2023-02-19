@@ -5,7 +5,7 @@ if (!library(Rmpi,logical.return = TRUE)){
 options(error=quote(assign(".mpi.err", TRUE, envir = .GlobalEnv)))
 .comm <- 1
 .intercomm <- 2
-invisible(mpi.comm.get.parent(.intercomm))
+invisible(mpi.comm.get.manager(.intercomm))
 invisible(mpi.intercomm.merge(.intercomm,1,.comm))
 invisible(mpi.comm.set.errhandler(.comm))
 mpi.hostinfo(.comm)

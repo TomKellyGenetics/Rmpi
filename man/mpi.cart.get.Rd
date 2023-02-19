@@ -30,7 +30,7 @@ Alek Hunchak and Hao Yu
 }
 \examples{
 \donttest{
-#Need at least 9 children
+#Need at least 9 workers
 mpi.bcast.cmd(mpi.cart.create(1,c(3,3),c(F,T)))
 mpi.cart.create(1,c(3,3),c(F,T))
 mpi.remote.exec(mpi.cart.get(3,2))

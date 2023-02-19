@@ -4,7 +4,7 @@ set Rscript=%1%
 set R_HOME=%2%
 set WDrive=%3%
 set WDir=%4%
-set Parent=%5%
+set Manager=%5%
 set MapDrive=%6%
 set RemotePath=%7%
 
@@ -17,7 +17,7 @@ cd /D %WDir%
 goto :EOF
 
 :last
-if %Parent% == %COMPUTERNAME% (
+if %Manager% == %COMPUTERNAME% (
 cd /D %WDir%
 if not errorlevel 0 cd /D e:\
 %R_HOME%\bin\x64\Rscript.exe --vanilla %Rscript%

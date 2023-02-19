@@ -1,12 +1,12 @@
 ### Copyright (C) 2002 Hao Yu
 mpi.finalize <- function(){
-    #if(interactive() && mpi.is.parent())
+    #if(interactive() && mpi.is.manager())
      #   print("Exiting Rmpi. Rmpi cannot be used unless relaunching R.")
     .Call("mpi_finalize",PACKAGE = "Rmpi")
 }
 
 mpi.exit <- function(){
-    if (mpi.is.parent())
+    if (mpi.is.manager())
     	print("Detaching Rmpi. Rmpi cannot be used unless relaunching R.")
     .Call("mpi_finalize",PACKAGE = "Rmpi")
     detach(package:Rmpi)
@@ -17,10 +17,10 @@ mpi.quit <- function(save="no"){
     q(save=save,runLast=FALSE)
 }
 
-mpi.is.parent <- function ()
+mpi.is.manager <- function ()
 {
-    if (is.loaded("mpi_comm_get_parent"))
-	as.logical(.Call("mpi_is_parent",PACKAGE = "Rmpi"))
+    if (is.loaded("mpi_comm_get_manager"))
+	as.logical(.Call("mpi_is_manager",PACKAGE = "Rmpi"))
     else {
 	if (mpi.comm.size(1)>0)
 	    as.logical(mpi.comm.rank(1)==0)

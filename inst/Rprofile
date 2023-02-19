@@ -12,7 +12,7 @@
 
 # Cannot be used as Rprofile.site because it will not work
 
-# If no CPU consumptions of children while waiting are desirable, change 
+# If no CPU consumptions of workers while waiting are desirable, change 
 # nonblocak=FALSE to nonblock=TRUE and change sleep time accordingly
 .nonblock=TRUE
 .sleep=0.1
@@ -26,7 +26,7 @@ library(grDevices)
 library(graphics)
 library(methods)
 
-#Change to TRUE if you don't want any child host info
+#Change to TRUE if you don't want any worker host info
 quiet=FALSE
 
 if (!invisible(library(Rmpi,logical.return = TRUE))){
@@ -61,14 +61,14 @@ if (mpi.comm.rank(0)==0) {
     #options(echo=TRUE)
     mpi.barrier(0)
     if(mpi.comm.size(0) > 1 && !quiet)
-        child.hostinfo(1)
+        worker.hostinfo(1)
 }
 
 .Last <- function(){
     if (is.loaded("mpi_initialize")){
         if (mpi.comm.size(1) > 1){
-            print("Please use mpi.close.Rchildren() to close children")
-            mpi.close.Rchildren(comm=1)
+            print("Please use mpi.close.Rworkers() to close workers")
+            mpi.close.Rworkers(comm=1)
     	}
     }
     #print("Please use mpi.quit() to quit R")

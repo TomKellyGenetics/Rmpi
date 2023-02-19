@@ -14,12 +14,12 @@ when creating the new communicator}
   Creates an intracommunicator from an intercommunicator 
 }
 \details{
-  When parent spawns children, an intercommunicator is created. To make 
-  communications (point-to-point or groupwise) among parent and children, an 
+  When manager spawns workers, an intercommunicator is created. To make 
+  communications (point-to-point or groupwise) among manager and workers, an 
   intracommunicator must be created. \code{mpi.intercomm.merge} is used for 
-  that purpose. This is a collective call so all parent and children call 
-  together. R children spawned by \code{\link{mpi.spawn.Rchildren}} should use
-\code{\link{mpi.comm.get.parent}} to get (set) an intercomm to a number followed 
+  that purpose. This is a collective call so all manager and workers call 
+  together. R workers spawned by \code{\link{mpi.spawn.Rworkers}} should use
+\code{\link{mpi.comm.get.manager}} to get (set) an intercomm to a number followed 
 by merging antercomm to an intracomm. One 
 can use \code{\link{mpi.comm.test.inter}} to test if a 
   communicator is an intercommunicator or not.

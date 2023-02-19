@@ -1,16 +1,16 @@
- simchild <- function (){
+ simworker <- function (){
     request <-1
     result <-2
-    chunksize <- 1000 #job size for children
+    chunksize <- 1000 #job size for workers
     anytag <- mpi.any.tag()
-    while (1) { #children do their jobs first and waiting instructions from parent
+    while (1) { #workers do their jobs first and waiting instructions from manager
 	x <- runif(chunksize)
 	y <- runif(chunksize)
 	incirvec <- (x-.5)^2 + (y-.5)^2 < .25
 	xy <- c(x[incirvec],y[incirvec])
-	#send the result to parent
+	#send the result to manager
 	mpi.send(xy, 2, dest=0, tag=result,comm=.comm)	
-	#receive instructions from parent
+	#receive instructions from manager
 	mpi.recv(integer(1),type=1,source=0,tag=anytag,comm=.comm)
 	tag <- mpi.get.sourcetag()[2]
 	if (tag!=request)
@@ -22,13 +22,13 @@ simPI <- function (n,epsilon=1e-4,comm=1)
 {
     tsize <- mpi.comm.size(comm)
     if (tsize < 2)
-	stop("It seems no children running")
+	stop("It seems no workers running")
    
-    #send the function simchild to all children
-    mpi.bcast.Robj2child(simchild, comm=comm)
+    #send the function simworker to all workers
+    mpi.bcast.Robj2worker(simworker, comm=comm)
 
-    #let children run the function simchild
-    mpi.bcast.cmd(simchild(), comm=comm)
+    #let workers run the function simworker
+    mpi.bcast.cmd(simworker(), comm=comm)
 
     chunksize <- 1000
     request <-1
@@ -41,7 +41,7 @@ simPI <- function (n,epsilon=1e-4,comm=1)
     plot(c(0,0),xlim=c(0,1),ylim=c(0,1), ylab="",type="n")
 
     while (1) {
-	#receive done job from children
+	#receive done job from workers
    	xy<-mpi.recv(double(2*chunksize),type=2,source=anysrc,
 			tag=result,comm=comm)
 	#receive buffer is biger than actual data. So need to get real length
@@ -58,15 +58,15 @@ simPI <- function (n,epsilon=1e-4,comm=1)
 	if (err > epsilon && count < n)
 	    mpi.send(integer(1),type=1,dest=src,tag=request,comm=comm)
 	else { 
-	    #tell children to stop with tag=0
+	    #tell workers to stop with tag=0
 	    mpi.send(integer(1),type=1,dest=src,tag=0,comm=comm)
 	    break
         }
     }
-    #only one child is stopped. So have to others to stop as well
+    #only one worker is stopped. So have to others to stop as well
     if (tsize > 2){
     for (i in 1:(tsize-2)){
-	#continue receiving other children jobs
+	#continue receiving other workers jobs
    	xy<-mpi.recv(double(2*chunksize),type=2,source=anysrc,
 			tag=result,comm=comm)
 	incir <-mpi.get.count(2)/2
@@ -77,7 +77,7 @@ simPI <- function (n,epsilon=1e-4,comm=1)
 	x <- xy[1:incir]
 	y<- xy[(incir+1):(2*incir)]
 	points(x,y,pch=".",cex=.2,col=src)
-	#tell other children to stop
+	#tell other workers to stop
 	mpi.send(integer(1),type=1,dest=src,tag=0,comm=comm)
     }
     }

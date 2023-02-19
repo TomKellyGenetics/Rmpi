@@ -37,7 +37,7 @@ mpi.comm.remote.size <- function(comm=2){
 
 mpi.comm.free <- function(comm=1){
     if (mpi.comm.size(comm)==0){
-    tmp<-paste("It seems no members(children) associated with comm", comm)
+    tmp<-paste("It seems no members(workers) associated with comm", comm)
     stop(tmp)
      }
      .Call("mpi_comm_free",as.integer(comm),PACKAGE = "Rmpi")
@@ -45,7 +45,7 @@ mpi.comm.free <- function(comm=1){
 
 mpi.abort <- function(comm=1){
     if (mpi.comm.size(comm)==0){
-    tmp<-paste("It seems no members(children) associated with comm", comm)
+    tmp<-paste("It seems no members(workers) associated with comm", comm)
     stop(tmp)
      }
      .Call("mpi_abort",as.integer(comm),PACKAGE = "Rmpi")
@@ -53,7 +53,7 @@ mpi.abort <- function(comm=1){
 
 mpi.comm.disconnect <- function(comm=1){
     if (mpi.comm.size(comm)==0){
-    tmp<-paste("It seems no members(children) associated with comm", comm)
+    tmp<-paste("It seems no members(workers) associated with comm", comm)
     stop(tmp)
      }
      if (!is.loaded("mpi_comm_disconnect"))
@@ -61,9 +61,9 @@ mpi.comm.disconnect <- function(comm=1){
      .Call("mpi_comm_disconnect",as.integer(comm),PACKAGE = "Rmpi")
 }
 
-mpi.comm.spawn <- function(child, 
-            childarg=character(0), 
-            nchildren=mpi.universe.size(),
+mpi.comm.spawn <- function(worker, 
+            workerarg=character(0), 
+            nworkers=mpi.universe.size(),
             info=0,
             root=0, 
             intercomm=2,
@@ -71,19 +71,19 @@ mpi.comm.spawn <- function(child,
         if (!is.loaded("mpi_comm_spawn"))
             stop("MPI_Comm_spawn is not supported.")
 
-    if (!is.character(child))
-        stop("character argument (child) expected")
-    #if (nchildren > mpi.universe.size()){
-    #            tmp <- paste("Number of R children is over",
+    if (!is.character(worker))
+        stop("character argument (worker) expected")
+    #if (nworkers > mpi.universe.size()){
+    #            tmp <- paste("Number of R workers is over",
     #                    mpi.universe.size(),": maximum CPUs.")
     #            warning(tmp)
     #    }
-    else if (nchildren <= 0)
-        stop("Choose a positive number of children.")
+    else if (nworkers <= 0)
+        stop("Choose a positive number of workers.")
     .Call("mpi_comm_spawn",
-                as.character(child),
-                as.character(childarg),
-                as.integer(nchildren),
+                as.character(worker),
+                as.character(workerarg),
+                as.integer(nworkers),
         as.integer(info),
         as.integer(root),
         as.integer(intercomm),
@@ -91,10 +91,10 @@ mpi.comm.spawn <- function(child,
 		PACKAGE = "Rmpi")
 }
 
-mpi.comm.get.parent <- function(comm=2){
-    if (!is.loaded("mpi_comm_get_parent"))
-        stop("MPI_Comm_get_parent is not supported.")
-    .Call("mpi_comm_get_parent", as.integer(comm),PACKAGE = "Rmpi")
+mpi.comm.get.manager <- function(comm=2){
+    if (!is.loaded("mpi_comm_get_manager"))
+        stop("MPI_Comm_get_manager is not supported.")
+    .Call("mpi_comm_get_manager", as.integer(comm),PACKAGE = "Rmpi")
 }
 
 mpi.comm.is.null <- function(comm){

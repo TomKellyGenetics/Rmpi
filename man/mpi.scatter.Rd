@@ -45,8 +45,8 @@ Hao Yu
 }
 \examples{
 \donttest{
-#Need 3 children to run properly
-#Or run  mpi.spawn.Rchildren(nchildren=3)
+#Need 3 workers to run properly
+#Or run  mpi.spawn.Rworkers(nworkers=3)
   num="123456789abcd"
   scounts<-c(2,3,1,7)
   mpi.bcast.cmd(strnum<-mpi.scatter(integer(1),type=1,rdata=integer(1),root=0))

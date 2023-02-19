@@ -83,10 +83,10 @@ SEXP mpi_comm_free(SEXP sexp_comm);
 SEXP mpi_abort(SEXP sexp_comm);
 SEXP mpi_comm_set_errhandler(SEXP sexp_comm);
 SEXP mpi_comm_test_inter(SEXP sexp_comm);
-SEXP mpi_comm_spawn (SEXP sexp_child, SEXP sexp_argv, SEXP sexp_nchild, SEXP sexp_info,
+SEXP mpi_comm_spawn (SEXP sexp_worker, SEXP sexp_argv, SEXP sexp_nworker, SEXP sexp_info,
 					 SEXP sexp_root, SEXP sexp_intercomm, SEXP sexp_quiet);
-SEXP mpi_comm_get_parent(SEXP sexp_comm);
-SEXP mpi_is_parent();
+SEXP mpi_comm_get_manager(SEXP sexp_comm);
+SEXP mpi_is_manager();
 SEXP mpi_comm_disconnect(SEXP sexp_comm);
 SEXP mpi_intercomm_merge(SEXP sexp_intercomm, SEXP sexp_high, SEXP sexp_comm);
 SEXP mpi_comm_remote_size(SEXP sexp_comm);

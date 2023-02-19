@@ -36,7 +36,7 @@ memory to store an info object.
 \code{mpi.info.get} returns the value (a char) for a given info and valuelen.
 }
 \seealso{
-  \code{\link{mpi.spawn.Rchildren}}
+  \code{\link{mpi.spawn.Rworkers}}
 }
 \author{
 Hao Yu

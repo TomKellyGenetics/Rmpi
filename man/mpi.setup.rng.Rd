@@ -1,8 +1,8 @@
 \name{mpi.setup.rngstream}
 \alias{mpi.setup.rngstream}
-\title{Setup parallel RNG on all children}
+\title{Setup parallel RNG on all workers}
 \description{
-  \code{mpi.setup.rngstream} setups RNGstream on all children. 
+  \code{mpi.setup.rngstream} setups RNGstream on all workers. 
 }
 \usage{
 mpi.setup.rngstream(iseed=NULL, comm = 1)
@@ -15,7 +15,7 @@ mpi.setup.rngstream(iseed=NULL, comm = 1)
   No value returned.
 }
 \details{
-  \code{mpi.setup.rngstream} can be run only on parent node. It can be run later on with the same or
+  \code{mpi.setup.rngstream} can be run only on manager node. It can be run later on with the same or
   different iseed.
 }
 \author{

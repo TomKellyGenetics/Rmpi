@@ -1056,6 +1056,7 @@ SEXP mpi_comm_spawn (SEXP sexp_child,
 		for (i=0; i < nchild; mpi_errhandler(childrrcode[i++]));
 
 	Free(childrrcode);
+        Rprintf("\t%d processes\n", nchild);
 	if (!quiet || realns < nchild)
 		Rprintf("\t%d children are spawned successfully. %d failed.\n", realns, nchild-realns);
     return AsInt(realns);

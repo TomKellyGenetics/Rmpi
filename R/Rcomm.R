@@ -80,7 +80,7 @@ mpi.comm.spawn <- function(child,
     #    }
     else if (nchildren <= 0)
         stop("Choose a positive number of children.")
-    .Call("mpi_comm_spawn",
+    outs <- .Call("mpi_comm_spawn",
                 as.character(child),
                 as.character(childarg),
                 as.integer(nchildren),
@@ -89,6 +89,8 @@ mpi.comm.spawn <- function(child,
         as.integer(intercomm),
 		as.integer(quiet),
 		PACKAGE = "Rmpi")
+    print("mpi_comm_spawn done")
+    return(outs)
 }
 
 mpi.comm.get.parent <- function(comm=2){
